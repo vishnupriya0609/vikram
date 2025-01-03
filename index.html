@@ -119,11 +119,6 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-        img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-        }
         .notification {
             margin-top: 20px;
             padding: 10px;
@@ -185,7 +180,6 @@
                             <th>Timing</th>
                             <th>Staff Name</th>
                             <th>Phone Number</th>
-                            <th>Photo</th>
                             <th>Assign</th>
                             <th>Notify</th>
                         </tr>
@@ -206,14 +200,14 @@
 
         const schedules = {
             AIDS: [
-                { period: 1, timing: '9:00 AM - 10:00 AM', staff: 'John', phone: '+1234567890', photo: 'menstaff.png' },
-                { period: 2, timing: '10:00 AM - 11:00 AM', staff: 'Free', phone: '', photo: 'placeholder.png' },
-                { period: 3, timing: '11:00 AM - 12:00 PM', staff: 'Mark', phone: '+1234567891', photo: 'menstaff.png' }
+                { period: 1, timing: '9:00 AM - 10:00 AM', staff: 'John', phone: '+1234567890' },
+                { period: 2, timing: '10:00 AM - 11:00 AM', staff: 'Free', phone: '' },
+                { period: 3, timing: '11:00 AM - 12:00 PM', staff: 'Mark', phone: '+1234567891' }
             ],
             CSE: [
-                { period: 1, timing: '9:00 AM - 10:00 AM', staff: 'Free', phone: '', photo: 'placeholder.png' },
-                { period: 2, timing: '10:00 AM - 11:00 AM', staff: 'Sophia', phone: '+1234567892', photo: 'ladystaff.png' },
-                { period: 3, timing: '11:00 AM - 12:00 PM', staff: 'Tom', phone: '+1234567893', photo: 'menstaff.png' }
+                { period: 1, timing: '9:00 AM - 10:00 AM', staff: 'Free', phone: '' },
+                { period: 2, timing: '10:00 AM - 11:00 AM', staff: 'Sophia', phone: '+1234567892' },
+                { period: 3, timing: '11:00 AM - 12:00 PM', staff: 'Tom', phone: '+1234567893' }
             ]
         };
 
@@ -246,7 +240,6 @@
                         <td>${schedule.timing}</td>
                         <td><input type="text" id="staff-${index}" value="${schedule.staff}" oninput="updateStaff('${department}', ${index})"></td>
                         <td><input type="text" id="phone-${index}" value="${schedule.phone}" oninput="updatePhone('${department}', ${index})"></td>
-                        <td><img id="photo-${index}" src="${schedule.photo}" alt="Staff Photo"></td>
                         <td><button onclick="assignStaff('${department}', ${index})">Assign</button></td>
                         <td><button class="notify" onclick="notifyStaff('${department}', ${index})">Notify</button></td>
                     </tr>
@@ -260,15 +253,6 @@
         function updateStaff(department, index) {
             const staffName = document.getElementById(`staff-${index}`).value;
             schedules[department][index].staff = staffName;
-
-            const photo = staffName.toLowerCase().includes('free') || staffName === ''
-                ? 'placeholder.png'
-                : staffName.toLowerCase() === 'john' || staffName.toLowerCase() === 'mark' || staffName.toLowerCase() === 'tom'
-                    ? 'menstaff.jpg'
-                    : 'ladystaff.jpg';
-
-            schedules[department][index].photo = photo;
-            document.getElementById(`photo-${index}`).src = photo;
 
             notifyAssignments();
         }
