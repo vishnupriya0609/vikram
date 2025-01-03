@@ -22,6 +22,26 @@
             margin: 0;
             font-size: 3rem;
         }
+        .schedule-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items to the top */
+            height: 100vh; /* Stretch vertically */
+            width: 100%; /* Full width */
+            padding: 20px; /* Add some padding around the page */
+            box-sizing: border-box; /* Ensure padding does not affect width */
+        }
+        
+        .schedule {
+            width: 100%; /* Allow the schedule container to stretch horizontally */
+            max-width: 1200px; /* You can set a maximum width to avoid it stretching too wide */
+            margin: 0 auto; /* Center it horizontally */
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
         .login-container, .schedule-container {
             display: flex;
             justify-content: center;
@@ -165,6 +185,7 @@
                             <th>Timing</th>
                             <th>Staff Name</th>
                             <th>Phone Number</th>
+                            <th>Photo</th>
                             <th>Assign</th>
                             <th>Notify</th>
                         </tr>
@@ -243,8 +264,8 @@
             const photo = staffName.toLowerCase().includes('free') || staffName === ''
                 ? 'placeholder.png'
                 : staffName.toLowerCase() === 'john' || staffName.toLowerCase() === 'mark' || staffName.toLowerCase() === 'tom'
-                    ? 'menstaff.png'
-                    : 'ladystaff.png';
+                    ? 'menstaff.jpg'
+                    : 'ladystaff.jpg';
 
             schedules[department][index].photo = photo;
             document.getElementById(`photo-${index}`).src = photo;
@@ -297,4 +318,3 @@
     </script>
 </body>
 </html>
-
