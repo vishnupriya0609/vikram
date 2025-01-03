@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Scheduling System</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #047559, #0a7765);
+            color: #0c1314;
+        }
+        header {
+            background-color: #033f35;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 3rem;
+        }
+        .login-container, .schedule-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+        }
+        .login-card, .schedule-card {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        .login-card h2, .schedule-card h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .login-card input, .schedule-card input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .login-card button, .schedule-card button {
+            padding: 12px 25px;
+            background-color: #047559;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .login-card button:hover, .schedule-card button:hover {
+            background-color: #033f35;
+        }
+        footer {
+            text-align: center;
+            background-color: #033f35;
+            color: white;
+            padding: 10px;
+        }
+        .error {
+            color: red;
+            margin-top: 15px;
+        }
+        .schedule {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #033f35;
+            color: white;
+        }
+        td input {
+            width: 90%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+        .notification {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            color: rgb(76, 145, 12);
+        }
+        button.notify {
+            background-color: #064416;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button.notify:hover {
+            background-color: #07771a;
+        }
+    </style>
+</head>
+<body style="text-align: center;">
+    <img src="staff.png" style="width: 150px; height: auto;">
+    
+    <!-- Login Page -->
+    <div id="login-section" class="login-container">
+        <div class="login-card">
+            <h2>Login to Your Account</h2>
+            <form id="login-form" onsubmit="return validateLogin()">
+                <input type="text" id="username" name="username" placeholder="Enter Username" required />
+                <input type="password" id="password" name="password" placeholder="Enter Password" required />
+                <button type="submit">Login</button>
+            </form>
+            <div id="error-message" class="error" style="display:none;">Invalid username or password!</div>
+        </div>
+    </div>
+
+    <!-- Main Scheduling Page (Initially Hidden) -->
+    <div id="schedule-section" class="schedule-container" style="display: none;">
+        <header>
+            <h1>Staff Scheduling System</h1>
+        </header>
+        <main>
+            <div>
+                <label for="department">Select Department:</label>
+                <select id="department" onchange="updateSchedule()">
+                    <option value="AIDS">AIDS</option>
+                    <option value="CSE">CSE</option>
+                    <option value="MECH">MECH</option>
+                    <option value="CIVIL">CIVIL</option>
+                    <option value="EEE">EEE</option>
+                </select>
+            </div>
+            <div class="schedule">
+                <h2>Department Schedule</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Timing</th>
+                            <th>Staff Name</th>
+                            <th>Phone Number</th>
+                            <th>Image</th>
+                            <th>Assign</th>
+                            <th>Notify</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-body"></tbody>
+                </table>
+                <div id="notification" class="notification" style="display:none;"></div>
+            </div>
+        </main>
+        <footer>
+            <button onclick="logout()">Logout</button>
+        </footer>
+    </div>
+
+    <script>
+        const correctUsername = "vikram";
+        const correctPassword = "vikram23";
+
+        const schedules = {
+            AIDS: [
+                { period: 1, timing: '9:00 AM - 10:00 AM', staff: 'John', phone: '+1234567890', photo: 'menstaff.png' },
+                { period: 2, timing: '10:00 AM - 11:00 AM', staff: 'Free', phone: '', photo: 'placeholder.png' },
+                { period: 3, timing: '11:00 AM - 12:00 PM', staff: 'Mark', phone: '+1234567891', photo: 'menstaff.png' }
+            ],
+            CSE: [
+                { period: 1, timing: '9:00 AM - 10:00 AM', staff: 'Free', phone: '', photo: 'placeholder.png' },
+                { period: 2, timing: '10:00 AM - 11:00 AM', staff: 'Sophia', phone: '+1234567892', photo: 'ladystaff.png' },
+                { period: 3, timing: '11:00 AM - 12:00 PM', staff: 'Tom', phone: '+1234567893', photo: 'menstaff.png' }
+            ]
+        };
+
+        function validateLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === correctUsername && password === correctPassword) {
+                // Hide login section and show the scheduling section
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('schedule-section').style.display = 'block';
+                updateSchedule();
+                return false; // Prevent form submission
+            } else {
+                // Show error message if login fails
+                document.getElementById('error-message').style.display = 'block';
+                return false; // Prevent form submission
+            }
+        }
+
+        function updateSchedule() {
+            const department = document.getElementById('department').value;
+            const scheduleBody = document.getElementById('schedule-body');
+            scheduleBody.innerHTML = '';
+
+            schedules[department].forEach((schedule, index) => {
+                const row = `
+                    <tr>
+                        <td>${schedule.period}</td>
+                        <td>${schedule.timing}</td>
+                        <td><input type="text" id="staff-${index}" value="${schedule.staff}" oninput="updateStaff('${department}', ${index})"></td>
+                        <td><input type="text" id="phone-${index}" value="${schedule.phone}" oninput="updatePhone('${department}', ${index})"></td>
+                        <td><img id="photo-${index}" src="${schedule.photo}" alt="Staff Photo"></td>
+                        <td><button onclick="assignStaff('${department}', ${index})">Assign</button></td>
+                        <td><button class="notify" onclick="notifyStaff('${department}', ${index})">Notify</button></td>
+                    </tr>
+                `;
+                scheduleBody.innerHTML += row;
+            });
+
+            notifyAssignments();
+        }
+
+        function updateStaff(department, index) {
+            const staffName = document.getElementById(`staff-${index}`).value;
+            schedules[department][index].staff = staffName;
+
+            const photo = staffName.toLowerCase().includes('free') || staffName === ''
+                ? 'placeholder.png'
+                : staffName.toLowerCase() === 'john' || staffName.toLowerCase() === 'mark' || staffName.toLowerCase() === 'tom'
+                    ? 'menstaff.png'
+                    : 'ladystaff.png';
+
+            schedules[department][index].photo = photo;
+            document.getElementById(`photo-${index}`).src = photo;
+
+            notifyAssignments();
+        }
+
+        function updatePhone(department, index) {
+            const phone = document.getElementById(`phone-${index}`).value;
+            schedules[department][index].phone = phone;
+        }
+
+        function assignStaff(department, index) {
+            const staffName = document.getElementById(`staff-${index}`).value;
+            schedules[department][index].staff = staffName;
+
+            alert(`Staff "${staffName}" assigned to Period ${index + 1} successfully!`);
+            updateStaff(department, index);
+        }
+
+        function notifyStaff(department, index) {
+            const staff = schedules[department][index];
+            const message = `Hello ${staff.staff}, you are assigned to Period ${staff.period} (${staff.timing}).`;
+
+            if (!staff.phone) {
+                alert(`No phone number available for ${staff.staff}.`);
+                return;
+            }
+
+            // Simulate SMS sending
+            alert(`Notification sent to ${staff.staff}`);
+        }
+
+        function notifyAssignments() {
+            const department = document.getElementById('department').value;
+            const assignedStaff = schedules[department]
+                .map(schedule => `Period ${schedule.period}: ${schedule.staff}`)
+                .join('<br>');
+
+            const notification = document.getElementById('notification');
+            notification.innerHTML = `<strong>Current Assignments:</strong><br>${assignedStaff}`;
+            notification.style.display = 'block';
+        }
+
+        function logout() {
+            // Hide the schedule section and show the login section
+            document.getElementById('schedule-section').style.display = 'none';
+            document.getElementById('login-section').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+
